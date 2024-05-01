@@ -1,0 +1,66 @@
+La programación reactiva aplica el patrón Observer para permitir que varios componentes de un sistema reaccionen automáticamente a los cambios de estado en otros componentes. Este patrón es fundamental en la programación reactiva, ya que proporciona un mecanismo para la propagación automática de cambios y la sincronización entre diferentes partes del sistema.
+
+Frameworks que utilizan la programación reactiva y el patrón Observer es RxJava,Project Reactor,Vert.x
+
+Un observable representa una fuente de datos que puede emitir elementos o notificaciones de eventos a lo largo del tiempo. Los observadores, por otro lado, son quienes están suscritos a estos observables y reaccionan a los elementos emitidos por ellos.
+
+                                                                                --Ejemplo--
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+public class Main {
+    public static void main(String[] args) {
+        // Crear un observable que genera números aleatorios cada segundo
+        Observable<Long> observable = Observable.interval(1, TimeUnit.SECONDS);
+
+        // Filtrar los números pares
+        Observable<Long> evenNumbersObservable = observable.filter(num -> num % 2 == 0);
+
+        // Crear un observador
+        Observer<Long> observer = new Observer<Long>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                // Método llamado cuando se realiza la suscripción al observable
+                System.out.println("Subscribed");
+            }
+
+            @Override
+            public void onNext(Long value) {
+                // Método llamado cuando el observable emite un nuevo número
+                System.out.println("Even number: " + value);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // Método llamado cuando ocurre un error
+                System.err.println("Error: " + e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                // Método llamado cuando el observable ha terminado de emitir todos los elementos
+                System.out.println("Completed");
+            }
+        };
+
+        // Suscribir el observador al observable de números pares
+        evenNumbersObservable.subscribe(observer);
+
+        // Esperar un tiempo para demostrar el flujo de datos
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+En este ejemplo, creamos un observable que genera números cada segundo utilizando Observable.interval(). Luego, aplicamos el operador filter() para filtrar solo los números pares.
+
+Después, creamos un observador que imprimirá en la consola los números pares generados. Finalmente, suscribimos el observador al observable de números pares.
+
